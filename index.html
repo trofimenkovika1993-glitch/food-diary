@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Дневник питания: 4 приема</title>
+    <style>
+        :root {
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --half-color: #fff3cd;
+            --full-color: #d1e7dd;
+            --text-dark: #2d3436;
+            --border-color: #dfe6e9;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-dark); margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        header { text-align: center; margin-bottom: 30px; }
+        
+        .meal-card { background: var(--card-bg); border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .meal-title { font-size: 1.5rem; margin-bottom: 20px; color: #0984e3; border-bottom: 2px solid #74b9ff; display: inline-block; }
+        
+        .group-container { margin-bottom: 20px; }
+        .group-header { font-weight: bold; font-size: 0.9rem; color: #636e72; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .limit-badge { background: #eee; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
+
+        /* СПИСОК В СТОЛБИК */
+        .products-list { display: flex; flex-direction: column; gap: 8px; }
+        
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            font-size: 0.95rem;
+        }
+
+        .product-item:hover { border-color: #b2bec3; }
+
+        /* Цветовые состояния */
+        .status-half { background-color: var(--half-color) !important; border-color: #ffeeba !important; font-weight: 600; }
+        .status-full { background-color: var(--full-color) !important; border-color: #badbcc !important; font-weight: 600; }
+
+        .weight-label { color: #636e72; font-size: 0.85rem; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Дневник рациона</h1>
+        <p>Нажми на продукт: 1 раз (0.5), 2 раза (1.0), 3 раза (отмена)</p>
+    </header>
+    <div id="app"></div>
+</div>
+
+<script>
+// Данные продуктов с базовым весом (для 1 порции)
+const dietData = [
+    {
+        name: "1️⃣ Прием пищи",
+        groups: [
+            { id: "1а", title: "📌 а) Сложные углеводы", items: [
+                { n: "Бобовые", w: 40 }, { n: "Картофель", w: 140 }, { n: "Кукуруза свежая", w: 140 }, { n: "Рис (не шлиф.)", w: 40 },
+                { n: "Любая крупа", w: 40 }, { n: "Ц/з мука", w: 40 }, { n: "Хлебцы", w: 60 }, { n: "Ц/з хлеб", w: 65 },
+                { n: "Макароны тв. сортов", w: 40 }, { n: "Лаваш", w: 60 }
+            ]},
+            { id: "1б", title: "📌 б) Молочные продукты", items: [
+                { n: "Творог нежирный (0.2%)", w: 160 }, { n: "Сыры (мягкие/тв)", w: 30 }, { n: "Сметана 15%", w: 65 },
+                { n: "Кефир 1%", w: 270 }, { n: "Йогурт 1%", w: 250 }, { n: "Молоко 1%", w: 280 }
+            ]},
+            { id: "1в", title: "📌 в) Что угодно / Фрукты", items: [
+                { n: "Что угодно (сладкое/снеки)", w: 100 }, { n: "Фрукты", w: 1000 }, { n: "Бананы", w: 600 }
+            ]}
+        ]
+    },
+    {
+        name: "2️⃣ Прием пищи",
+        groups: [
+            { id: "2г", title: "📌 г) Сложные углеводы", items: [
+                { n: "Бобовые", w: 40 }, { n: "Картофель", w: 140 }, { n: "Кукуруза свежая", w: 140 }, { n: "Рис (не шлиф.)", w: 40 },
+                { n: "Любая крупа", w: 40 }, { n: "Макароны тв. сортов", w: 40 }
+            ]},
+            { id: "2д", title: "📌 д) Белки", items: [
+                { n: "Телятина", w: 165 }, { n: "Печень", w: 165 }, { n: "Куриное/Индюшиное филе", w: 175 },
+                { n: "Рыба (до 5%)", w: 175 }, { n: "Рыба (жирная)", w: 140 }, { n: "2 яйца", w: 1 }, { n: "Морепродукты", w: 220 }
+            ]},
+            { id: "2е", title: "📌 е) Овощи / Грибы", items: [
+                { n: "Овощи / Квашеные / Зелень", w: 300 }, { n: "Грибы", w: 300 }
+            ]},
+            { id: "2ё", title: "📌 ё) Жиры / Соусы", items: [
+                { n: "Масло любое", w: 10 }, { n: "Майонез", w: 13 }, { n: "Авокадо", w: 55 }, { n: "Оливки", w: 70 },
+                { n: "Горчица", w: 24 }, { n: "Кетчуп", w: 36 }, { n: "Сало", w: 9 }
+            ]}
+        ]
+    },
+    {
+        name: "3️⃣ Прием пищи",
+        groups: [
+            { id: "3ж", title: "📌 ж) Молочные продукты", items: [
+                { n: "Творог нежирный (0.2%)", w: 190 }, { n: "Сыры", w: 40 }, { n: "Сметана 15%", w: 75 },
+                { n: "Кефир 1%", w: 330 }, { n: "Йогурт 1%", w: 330 }, { n: "Молоко 1%", w: 335 }
+            ]},
+            { id: "3з", title: "📌 з) Фрукты и ягоды", items: [
+                { n: "Фрукты и ягоды", w: 320 }, { n: "Бананы/Виноград/Хурма", w: 190 }
+            ]},
+            { id: "3и", title: "📌 и) Орехи и семена", items: [
+                { n: "Грецкие орехи / Семена", w: 15 }
+            ]}
+        ]
+    },
+    {
+        name: "4️⃣ Прием пищи",
+        groups: [
+            { id: "4и", title: "📌 и) Белки", items: [
+                { n: "Телятина", w: 165 }, { n: "Печень", w: 165 }, { n: "Филе птицы", w: 175 },
+                { n: "Рыба (до 5%)", w: 175 }, { n: "Рыба (жирная)", w: 140 }, { n: "Морепродукты", w: 220 }
+            ]},
+            { id: "4й", title: "📌 й) Овощи / Грибы", items: [
+                { n: "Овощи и зелень", w: 300 }, { n: "Грибы", w: 300 }
+            ]},
+            { id: "4к", title: "📌 к) Жиры", items: [
+                { n: "Масло", w: 10 }, { n: "Майонез", w: 13 }, { n: "Авокадо", w: 55 }, { n: "Оливки", w: 70 }, { n: "Сало", w: 9 }
+            ]}
+        ]
+    }
+];
+
+let eaten = {};
+
+function eat(groupId, itemName) {
+    const key = `${groupId}_${itemName}`;
+    
+    // Сумма по группе
+    let groupSum = 0;
+    for (let k in eaten) {
+        if (k.startsWith(groupId + "_") && k !== key) {
+            groupSum += eaten[k];
+        }
+    }
+
+    const current = eaten[key] || 0;
+    let next;
+
+    if (current === 0) {
+        next = (groupSum + 0.5 <= 1) ? 0.5 : 0;
+    } else if (current === 0.5) {
+        next = (groupSum + 1 <= 1) ? 1 : 0;
+    } else {
+        next = 0;
+    }
+
+    eaten[key] = next;
+    render();
+}
+
+function render() {
+    const app = document.getElementById('app');
+    let html = '';
+
+    dietData.forEach(meal => {
+        html += `<div class="meal-card"><div class="meal-title">${meal.name}</div>`;
+        
+        meal.groups.forEach(group => {
+            html += `
+                <div class="group-container">
+                    <div class="group-header">
+                        ${group.title} <span class="limit-badge">лимит 1 порция</span>
+                    </div>
+                    <div class="products-list">
+            `;
+
+            group.items.forEach(item => {
+                const key = `${group.id}_${item.n}`;
+                const val = eaten[key] || 0;
+                
+                let cls = '';
+                let weightText = (item.w === 1) ? `${item.n}` : `${item.n} (${item.w} г)`;
+                
+                if (val === 0.5) {
+                    cls = 'status-half';
+                    if (item.w > 1) weightText = `${item.n} (${item.w / 2} г)`;
+                    if (item.w === 1) weightText = `${item.n} (1/2 порции)`;
+                } else if (val === 1) {
+                    cls = 'status-full';
+                }
+
+                html += `
+                    <div class="product-item ${cls}" onclick="eat('${group.id}', '${item.n}')">
+                        <span>${item.n}</span>
+                        <span class="weight-label">${val > 0 ? (val === 0.5 ? '½ порции' : '1 порция') : weightText}</span>
+                    </div>`;
+            });
+
+            html += `</div></div>`;
+        });
+        html += `</div>`;
+    });
+
+    app.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', render);
+</script>
+
+</body>
+</html>
