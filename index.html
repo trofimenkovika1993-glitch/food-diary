@@ -4,52 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дневник питания: 4 приема</title>
-    <style>
-        :root {
-            --bg-color: #f0f2f5;
-            --card-bg: #ffffff;
-            --half-color: #fff3cd;
-            --full-color: #d1e7dd;
-            --text-dark: #2d3436;
-            --border-color: #dfe6e9;
-        }
-
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-dark); margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
+   <style>
+    :root {
+        /* Используем переменные Telegram для автоматической смены тем */
+        --bg-color: var(--tg-theme-bg-color, #f0f2f5);
+        --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
+        --text-color: var(--tg-theme-text-color, #2d3436);
+        --hint-color: var(--tg-theme-hint-color, #636e72);
+        --accent-color: var(--tg-theme-button-color, #0984e3);
         
-        header { text-align: center; margin-bottom: 30px; }
-        
-        .meal-card { background: var(--card-bg); border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .meal-title { font-size: 1.5rem; margin-bottom: 20px; color: #0984e3; border-bottom: 2px solid #74b9ff; display: inline-block; }
-        
-        .group-container { margin-bottom: 20px; }
-        .group-header { font-weight: bold; font-size: 0.9rem; color: #636e72; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        .limit-badge { background: #eee; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; }
+        /* Цвета для состояний (адаптированы под темный фон) */
+        --half-color: rgba(255, 243, 205, 0.2);
+        --full-color: rgba(209, 231, 221, 0.2);
+        --border-color: var(--tg-theme-hint-color, #dfe6e9);
+    }
 
-        /* СПИСОК В СТОЛБИК */
-        .products-list { display: flex; flex-direction: column; gap: 8px; }
-        
-        .product-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: white;
-            font-size: 0.95rem;
-        }
+    body { 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+        background-color: var(--bg-color); 
+        color: var(--text-color); 
+        margin: 0; 
+        padding: 15px; 
+        font-size: 17px; /* Увеличили основной шрифт */
+        line-height: 1.5;
+    }
 
-        .product-item:hover { border-color: #b2bec3; }
+    .container { max-width: 600px; margin: 0 auto; }
+    
+    header { text-align: center; margin-bottom: 25px; }
+    header h1 { font-size: 1.8rem; margin-bottom: 5px; }
+    header p { color: var(--hint-color); font-size: 0.95rem; }
+    
+    .meal-card { 
+        background: var(--card-bg); 
+        border-radius: 16px; 
+        padding: 16px; 
+        margin-bottom: 20px; 
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+    }
 
-        /* Цветовые состояния */
-        .status-half { background-color: var(--half-color) !important; border-color: #ffeeba !important; font-weight: 600; }
-        .status-full { background-color: var(--full-color) !important; border-color: #badbcc !important; font-weight: 600; }
+    .meal-title { 
+        font-size: 1.4rem; /* Увеличили */
+        font-weight: bold;
+        margin-bottom: 15px; 
+        color: var(--accent-color); 
+        display: block;
+    }
+    
+    .group-header { 
+        font-weight: 600; 
+        font-size: 1rem; /* Увеличили */
+        color: var(--text-color); 
+        margin: 15px 0 10px 0; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+        opacity: 0.9;
+    }
 
-        .weight-label { color: #636e72; font-size: 0.85rem; pointer-events: none; }
-    </style>
+    .limit-badge { 
+        background: rgba(128, 128, 128, 0.1); 
+        padding: 2px 10px; 
+        border-radius: 20px; 
+        font-size: 0.75rem; 
+        color: var(--hint-color);
+    }
+
+    .products-list { display: flex; flex-direction: column; gap: 10px; }
+    
+    .product-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 16px; /* Больше отступы для удобства нажатия пальцем */
+        border: 1px solid rgba(128, 128, 128, 0.2);
+        border-radius: 12px;
+        cursor: pointer;
+        background: var(--bg-color);
+        transition: transform 0.1s ease;
+        -webkit-tap-highlight-color: transparent; /* Убирает синюю рамку при нажатии на мобильных */
+    }
+
+    .product-item:active { transform: scale(0.98); }
+
+    /* Состояния нажатия */
+    .status-half { 
+        background-color: #f1c40f !important; 
+        color: #000 !important; 
+        border-color: #f1c40f !important; 
+    }
+    .status-full { 
+        background-color: #2ecc71 !important; 
+        color: #000 !important; 
+        border-color: #2ecc71 !important; 
+    }
+
+    .weight-label { 
+        color: var(--hint-color); 
+        font-size: 0.9rem; 
+    }
+    
+    .status-half .weight-label, .status-full .weight-label {
+        color: #000;
+        font-weight: bold;
+    }
+</style>
 </head>
 <body>
 
@@ -211,4 +270,5 @@ document.addEventListener('DOMContentLoaded', render);
 </script>
 
 </body>
+
 </html>
