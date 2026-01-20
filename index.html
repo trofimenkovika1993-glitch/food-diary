@@ -5,18 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Дневник питания: 4 приема</title>
    <style>
+    <style>
     :root {
-        /* Используем переменные Telegram для автоматической смены тем */
-        --bg-color: var(--tg-theme-bg-color, #f0f2f5);
-        --card-bg: var(--tg-theme-secondary-bg-color, #ffffff);
-        --text-color: var(--tg-theme-text-color, #2d3436);
-        --hint-color: var(--tg-theme-hint-color, #636e72);
-        --accent-color: var(--tg-theme-button-color, #0984e3);
+        /* Фиксированные темные цвета */
+        --bg-color: #1c1c1d;           /* Глубокий темный фон */
+        --card-bg: #2c2c2e;           /* Цвет карточек чуть светлее */
+        --text-color: #ffffff;        /* Белый текст */
+        --hint-color: #8e8e93;        /* Серый текст для подписей */
+        --accent-color: #0a84ff;      /* Ярко-синий акцент */
         
-        /* Цвета для состояний (адаптированы под темный фон) */
-        --half-color: rgba(255, 243, 205, 0.2);
-        --full-color: rgba(209, 231, 221, 0.2);
-        --border-color: var(--tg-theme-hint-color, #dfe6e9);
+        /* Цвета состояний */
+        --half-color: #ffd60a;        /* Желтый для 0.5 порции */
+        --full-color: #32d74b;        /* Зеленый для 1 порции */
+        --border-color: #3a3a3c;
     }
 
     body { 
@@ -24,7 +25,7 @@
         background-color: var(--bg-color); 
         color: var(--text-color); 
         margin: 0; 
-        padding: 12px; 
+        padding: 11px; 
         font-size: 14px; 
         line-height: 1;
     }
@@ -44,7 +45,7 @@
     }
 
     .meal-title { 
-        font-size: 1.4rem; /* Увеличили */
+        font-size: 1.4rem; 
         font-weight: bold;
         margin-bottom: 15px; 
         color: var(--accent-color); 
@@ -53,7 +54,7 @@
     
     .group-header { 
         font-weight: 600; 
-        font-size: 1rem; /* Увеличили */
+        font-size: 1rem; 
         color: var(--text-color); 
         margin: 15px 0 10px 0; 
         display: flex; 
@@ -76,13 +77,13 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 14px 16px; /* Больше отступы для удобства нажатия пальцем */
+        padding: 14px 16px; 
         border: 1px solid rgba(128, 128, 128, 0.2);
         border-radius: 12px;
         cursor: pointer;
         background: var(--bg-color);
         transition: transform 0.1s ease;
-        -webkit-tap-highlight-color: transparent; /* Убирает синюю рамку при нажатии на мобильных */
+        -webkit-tap-highlight-color: transparent; 
     }
 
     .product-item:active { transform: scale(0.98); }
@@ -272,4 +273,5 @@ document.addEventListener('DOMContentLoaded', render);
 </body>
 
 </html>
+
 
