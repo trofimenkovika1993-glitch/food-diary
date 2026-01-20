@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Дневник питания</title>
+    <title>Дневник питания PRO</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -15,62 +15,33 @@
             --border-color: #3a3a3c;
         }
 
-        body { 
-            font-family: -apple-system, system-ui, sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-color); 
-            margin: 0; padding: 0; 
-            font-size: 17px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            background: var(--card-bg);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            background: none;
-            color: var(--hint-color);
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .tab-btn.active {
-            color: var(--accent-color);
-            border-bottom: 3px solid var(--accent-color);
-        }
-
-        .container { padding: 15px; padding-bottom: 80px; }
+        body { font-family: -apple-system, system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; font-size: 16px; }
+        .nav-tabs { display: flex; background: var(--card-bg); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; color: var(--hint-color); font-size: 13px; font-weight: bold; cursor: pointer; }
+        .tab-btn.active { color: var(--accent-color); border-bottom: 3px solid var(--accent-color); }
+        
+        .container { padding: 10px; padding-bottom: 100px; }
         .section { display: none; }
         .section.active { display: block; }
 
-        .meal-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .meal-title { font-size: 1.2rem; font-weight: bold; color: var(--accent-color); margin-bottom: 10px; }
+        .meal-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .meal-title { font-size: 1.2rem; font-weight: bold; color: var(--accent-color); margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
         
-        .group-header { font-size: 0.9rem; color: var(--hint-color); margin: 10px 0 5px 0; }
-        .products-list { display: flex; flex-direction: column; gap: 8px; }
+        .group-container { margin-bottom: 15px; }
+        .group-header { font-size: 0.85rem; font-weight: 600; color: var(--hint-color); margin-bottom: 8px; display: flex; justify-content: space-between; }
         
+        .products-list { display: flex; flex-direction: column; gap: 6px; }
         .product-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 15px; border: 1px solid var(--border-color);
-            border-radius: 10px; background: var(--bg-color);
+            padding: 10px 12px; border: 1px solid var(--border-color);
+            border-radius: 10px; background: var(--bg-color); transition: all 0.2s;
         }
-        .status-half { background: #ffd60a !important; color: #000; font-weight: bold; }
-        .status-full { background: #32d74b !important; color: #000; font-weight: bold; }
+        
+        .status-half { background: #ffd60a !important; color: #000; border-color: #ffd60a; font-weight: bold; }
+        .status-full { background: #32d74b !important; color: #000; border-color: #32d74b; font-weight: bold; }
 
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 5px; color: var(--hint-color); font-size: 0.9rem; }
-        input {
-            width: 100%; padding: 12px; border-radius: 10px; 
-            border: 1px solid var(--border-color); background: var(--bg-color);
-            color: #fff; font-size: 16px; box-sizing: border-box;
-        }
+        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-color); color: #fff; font-size: 16px; box-sizing: border-box; margin-top: 5px; }
+        label { font-size: 0.9rem; color: var(--hint-color); margin-top: 10px; display: block; }
     </style>
 </head>
 <body>
@@ -88,18 +59,21 @@
 
     <div id="activity" class="section">
         <div class="meal-card">
-            <div class="meal-title">Шаги</div>
-            <input type="number" id="steps" placeholder="Количество шагов...">
+            <div class="meal-title">Движение</div>
+            <label>Шаги за сегодня</label>
+            <input type="number" id="steps" placeholder="Напр: 8500">
         </div>
     </div>
 
     <div id="measurements" class="section">
         <div class="meal-card">
-            <div class="meal-title">Замеры</div>
-            <div class="input-group"><label>Вес (кг)</label><input type="number" step="0.1" id="m_weight"></div>
-            <div class="input-group"><label>Грудь (см)</label><input type="number" id="m_chest"></div>
-            <div class="input-group"><label>Талия (см)</label><input type="number" id="m_waist"></div>
-            <div class="input-group"><label>Бедра (см)</label><input type="number" id="m_hips"></div>
+            <div class="meal-title">Параметры тела</div>
+            <label>Вес (кг)</label><input type="number" step="0.1" id="m_weight">
+            <label>Грудь (см)</label><input type="number" id="m_chest">
+            <label>Талия (см)</label><input type="number" id="m_waist">
+            <label>Бедра (см)</label><input type="number" id="m_hips">
+            <label>Плечо (см)</label><input type="number" id="m_shoulder">
+            <label>Нога (см)</label><input type="number" id="m_leg">
         </div>
     </div>
 </div>
@@ -107,7 +81,7 @@
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    tg.MainButton.text = "ОТПРАВИТЬ ОТЧЕТ";
+    tg.MainButton.text = "СОХРАНИТЬ ОТЧЕТ";
     tg.MainButton.show();
 
     function showSection(id) {
@@ -117,34 +91,38 @@
         event.currentTarget.classList.add('active');
     }
 
-    // ПОЛНЫЙ СПИСОК ПРОДУКТОВ С КАЛОРИЯМИ (на 100г)
     const dietData = [
         {
             name: "1️⃣ Прием пищи",
             groups: [
-                { id: "1а", title: "📌 Сложные углеводы", items: [{ n: "Бобовые", w: 40, c: 130 }, { n: "Картофель", w: 140, c: 80 }, { n: "Рис", w: 40, c: 340 }, { n: "Хлебцы", w: 60, c: 300 }] },
-                { id: "1б", title: "📌 Молочные", items: [{ n: "Творог", w: 160, c: 80 }, { n: "Сыр", w: 30, c: 350 }, { n: "Кефир", w: 270, c: 40 }] }
+                { id: "1а", title: "📌 а) Сложные углеводы", items: [{ n: "Бобовые", w: 40, c: 130 }, { n: "Картофель", w: 140, c: 77 }, { n: "Кукуруза", w: 140, c: 86 }, { n: "Рис", w: 40, c: 340 }, { n: "Крупа любая", w: 40, c: 330 }, { n: "Ц/з мука", w: 40, c: 300 }, { n: "Хлебцы", w: 60, c: 310 }, { n: "Хлеб ц/з", w: 65, c: 250 }, { n: "Макароны", w: 40, c: 350 }, { n: "Лаваш", w: 60, c: 270 }] },
+                { id: "1б", title: "📌 б) Молочные продукты", items: [{ n: "Творог 0.2%", w: 160, c: 80 }, { n: "Сыры", w: 30, c: 360 }, { n: "Сметана 15%", w: 65, c: 160 }, { n: "Кефир 1%", w: 270, c: 40 }, { n: "Йогурт 1%", w: 250, c: 50 }, { n: "Молоко 1%", w: 280, c: 42 }] },
+                { id: "1в", title: "📌 в) Что угодно / Фрукты", items: [{ n: "Сладкое/Снеки", w: 100, c: 450 }, { n: "Фрукты", w: 1000, c: 50 }, { n: "Бананы", w: 600, c: 95 }] }
             ]
         },
         {
             name: "2️⃣ Прием пищи",
             groups: [
-                { id: "2г", title: "📌 Углеводы", items: [{ n: "Гречка", w: 40, c: 330 }, { n: "Макароны", w: 40, c: 350 }] },
-                { id: "2д", title: "📌 Белки", items: [{ n: "Филе", w: 175, c: 110 }, { n: "Рыба", w: 175, c: 90 }, { n: "Яйца (2шт)", w: 1, c: 150 }] }
+                { id: "2г", title: "📌 г) Сложные углеводы", items: [{ n: "Бобовые", w: 40, c: 130 }, { n: "Картофель", w: 140, c: 77 }, { n: "Крупа", w: 40, c: 330 }, { n: "Макароны", w: 40, c: 350 }] },
+                { id: "2д", title: "📌 д) Белки", items: [{ n: "Телятина", w: 165, c: 150 }, { n: "Печень", w: 165, c: 130 }, { n: "Филе птицы", w: 175, c: 110 }, { n: "Рыба <5%", w: 175, c: 90 }, { n: "Рыба жирная", w: 140, c: 200 }, { n: "2 яйца", w: 1, c: 155 }, { n: "Морепродукты", w: 220, c: 85 }] },
+                { id: "2е", title: "📌 е) Овощи / Грибы", items: [{ n: "Овощи/Зелень", w: 300, c: 25 }, { n: "Грибы", w: 300, c: 22 }] },
+                { id: "2ё", title: "📌 ё) Жиры / Соусы", items: [{ n: "Масло", w: 10, c: 890 }, { n: "Майонез", w: 13, c: 680 }, { n: "Авокадо", w: 55, c: 160 }, { n: "Оливки", w: 70, c: 115 }, { n: "Сало", w: 9, c: 800 }] }
             ]
         },
         {
             name: "3️⃣ Прием пищи",
             groups: [
-                { id: "3ж", title: "📌 Молочные", items: [{ n: "Йогурт", w: 330, c: 50 }, { n: "Творог", w: 190, c: 80 }] },
-                { id: "3з", title: "📌 Фрукты", items: [{ n: "Яблоко", w: 320, c: 50 }, { n: "Банан", w: 190, c: 90 }] }
+                { id: "3ж", title: "📌 ж) Молочные", items: [{ n: "Творог", w: 190, c: 80 }, { n: "Сыры", w: 40, c: 360 }, { n: "Кефир/Йогурт", w: 330, c: 45 }] },
+                { id: "3з", title: "📌 з) Фрукты и ягоды", items: [{ n: "Фрукты/Ягоды", w: 320, c: 50 }, { n: "Банан/Хурма", w: 190, c: 95 }] },
+                { id: "3и", title: "📌 и) Орехи и семена", items: [{ n: "Орехи/Семена", w: 15, c: 650 }] }
             ]
         },
         {
             name: "4️⃣ Прием пищи",
             groups: [
-                { id: "4и", title: "📌 Белки", items: [{ n: "Телятина", w: 165, c: 150 }, { n: "Морепродукты", w: 220, c: 80 }] },
-                { id: "4й", title: "📌 Овощи", items: [{ n: "Овощи", w: 300, c: 30 }] }
+                { id: "4и", title: "📌 и) Белки", items: [{ n: "Филе птицы", w: 175, c: 110 }, { n: "Рыба", w: 175, c: 90 }, { n: "Морепродукты", w: 220, c: 85 }, { n: "Телятина", w: 165, c: 150 }] },
+                { id: "4й", title: "📌 й) Овощи", items: [{ n: "Овощи/Зелень", w: 300, c: 25 }] },
+                { id: "4к", title: "📌 к) Жиры", items: [{ n: "Масло", w: 10, c: 890 }, { n: "Авокадо", w: 55, c: 160 }, { n: "Сало", w: 9, c: 800 }] }
             ]
         }
     ];
@@ -153,56 +131,70 @@
 
     function eat(groupId, itemName) {
         const key = `${groupId}_${itemName}`;
+        let groupSum = 0;
+        for (let k in eaten) {
+            if (k.startsWith(groupId + "_") && k !== key) groupSum += eaten[k];
+        }
+
         const current = eaten[key] || 0;
-        eaten[key] = current === 0 ? 0.5 : (current === 0.5 ? 1 : 0);
+        let next = 0;
+
+        if (current === 0) {
+            next = (groupSum + 0.5 <= 1) ? 0.5 : 0;
+        } else if (current === 0.5) {
+            next = (groupSum + 1 <= 1) ? 1 : 0;
+        } else {
+            next = 0;
+        }
+
+        eaten[key] = next;
         renderFood();
     }
 
     function renderFood() {
-        const container = document.getElementById('food-app');
+        const app = document.getElementById('food-app');
         let html = '';
         dietData.forEach(meal => {
             html += `<div class="meal-card"><div class="meal-title">${meal.name}</div>`;
             meal.groups.forEach(group => {
-                html += `<div class="group-header">${group.title}</div><div class="products-list">`;
+                html += `<div class="group-container"><div class="group-header"><span>${group.title}</span><span style="font-size:0.7rem">лимит 1.0</span></div><div class="products-list">`;
                 group.items.forEach(item => {
-                    const key = `${group.id}_${item.n}`;
-                    const val = eaten[key] || 0;
+                    const val = eaten[`${group.id}_${item.n}`] || 0;
                     const cls = val === 0.5 ? 'status-half' : (val === 1 ? 'status-full' : '');
-                    const label = val > 0 ? (val === 0.5 ? '½ порц.' : '1 порц.') : item.w + (item.w > 5 ? 'г' : 'шт');
+                    const weightDisp = (item.w === 1) ? '' : (val === 0.5 ? (item.w/2)+'г' : item.w+'г');
                     html += `<div class="product-item ${cls}" onclick="eat('${group.id}', '${item.n}')">
-                        <span>${item.n}</span><span>${label}</span>
+                        <span>${item.n}</span><span style="opacity:0.6; font-size:0.8rem">${val > 0 ? (val === 0.5 ? '½ порц.' : '1 порц.') : weightDisp}</span>
                     </div>`;
                 });
-                html += `</div>`;
+                html += `</div></div>`;
             });
             html += `</div>`;
         });
-        container.innerHTML = html;
+        app.innerHTML = html;
     }
 
     tg.MainButton.onClick(() => {
         const steps = document.getElementById('steps').value || 0;
-        const weight = document.getElementById('m_weight').value || "-";
         const date = new Date().toLocaleDateString('ru-RU');
+        let report = `📅 *ОТЧЕТ ЗА ${date}*\n\n👣 Шаги: ${steps}\n⚖️ Вес: ${document.getElementById('m_weight').value || '-'} кг\n`;
         
-        let report = `📅 Дата: ${date}\n👣 Шаги: ${steps}\n⚖️ Вес: ${weight} кг\n\n🍎 Съедено:`;
         let totalCal = 0;
+        let foodPart = "\n🍎 *ПИТАНИЕ:*";
 
         dietData.forEach(meal => {
             meal.groups.forEach(group => {
                 group.items.forEach(item => {
                     const val = eaten[`${group.id}_${item.n}`] || 0;
                     if (val > 0) {
-                        const calories = item.w > 5 ? Math.round((item.c * item.w * val) / 100) : Math.round(item.c * val);
-                        totalCal += calories;
-                        report += `\n- ${item.n}: ${val} порц. (~${calories} ккал)`;
+                        const cals = item.w === 1 ? Math.round(item.c * val) : Math.round((item.c * item.w * val) / 100);
+                        totalCal += cals;
+                        foodPart += `\n• ${item.n} (${val} порц) → ${cals} ккал`;
                     }
                 });
             });
         });
 
-        report += `\n\n🔥 Всего за день: ${totalCal} ккал`;
+        report += foodPart + `\n\n🔥 *ИТОГО:* ${totalCal} ккал`;
         tg.sendData(report);
     });
 
