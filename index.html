@@ -12,14 +12,14 @@
         }
         body { font-family: -apple-system, system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
         .nav-tabs { display: flex; background: var(--card-bg); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: none; color: var(--hint-color); font-size: 13px; font-weight: bold; }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; color: var(--hint-color); font-size: 13px; font-weight: bold; cursor: pointer; }
         .tab-btn.active { color: var(--accent-color); border-bottom: 3px solid var(--accent-color); }
-        .container { padding: 10px; padding-bottom: 100px; }
+        .container { padding: 10px; padding-bottom: 120px; }
         .section { display: none; }
         .section.active { display: block; }
         .meal-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
         .meal-title { font-size: 1.1rem; font-weight: bold; color: var(--accent-color); margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
-        .group-header { font-size: 0.8rem; color: var(--hint-color); margin: 15px 0 8px; font-weight: bold; display: flex; justify-content: space-between; }
+        .group-header { font-size: 0.8rem; color: var(--hint-color); margin: 15px 0 8px; font-weight: bold; }
         .product-item {
             display: flex; justify-content: space-between; align-items: center; padding: 12px; 
             border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-color); 
@@ -41,15 +41,9 @@
 
 <div class="container">
     <div id="nutrition" class="section active"><div id="food-app"></div></div>
-    
     <div id="activity" class="section">
-        <div class="meal-card">
-            <div class="meal-title">Активность</div>
-            <label>Шаги за день</label>
-            <input type="number" id="steps" placeholder="0">
-        </div>
+        <div class="meal-card"><div class="meal-title">Активность</div><label>Шаги</label><input type="number" id="steps"></div>
     </div>
-
     <div id="measurements" class="section">
         <div class="meal-card">
             <div class="meal-title">Замеры</div>
@@ -57,8 +51,6 @@
             <label>Грудь (см)</label><input type="number" id="m_chest">
             <label>Талия (см)</label><input type="number" id="m_waist">
             <label>Бедра (см)</label><input type="number" id="m_hips">
-            <label>Плечо (см)</label><input type="number" id="m_shoulder">
-            <label>Нога (см)</label><input type="number" id="m_leg">
         </div>
     </div>
 </div>
@@ -80,69 +72,54 @@
         {
             name: "1️⃣ Прием пищи",
             groups: [
-                { id: "1а", title: "а) Сложные углеводы", items: [{ n: "Бобовые", w: 40, c: 130 }, { n: "Картофель", w: 140, c: 77 }, { n: "Рис", w: 40, c: 340 }, { n: "Крупа", w: 40, c: 330 }, { n: "Хлебцы", w: 60, c: 310 }, { n: "Макароны", w: 40, c: 350 }] },
-                { id: "1б", title: "б) Молочные", items: [{ n: "Творог 0.2%", w: 160, c: 80 }, { n: "Сыры", w: 30, c: 360 }, { n: "Кефир 1%", w: 270, c: 40 }] },
-                { id: "1в", title: "в) Что угодно / Фрукты", items: [{ n: "Сладкое", w: 100, c: 450 }, { n: "Фрукты", w: 1000, c: 50 }] }
+                { id: "1а", title: "а) Сложные углеводы (~145 ккал)", items: [{n:"Бобовые",w:40},{n:"Картофель",w:140},{n:"Кукуруза свежая",w:140},{n:"Рис (не шлиф.)",w:40},{n:"Крупа любая",w:40},{n:"Ц/з мука",w:40},{n:"Хлебцы",w:60},{n:"Ц/з хлеб",w:65},{n:"Макароны тв.",w:40},{n:"Лаваш",w:60}] },
+                { id: "1б", title: "б) Молочные продукты (~120 ккал)", items: [{n:"Творог 0.2%",w:160},{n:"Сыры",w:30},{n:"Сметана 15%",w:65},{n:"Кефир 1%",w:270},{n:"Йогурт 1%",w:250},{n:"Молоко 1%",w:280}] },
+                { id: "1в", title: "в) Что угодно (~500 ккал)", items: [{n:"Что угодно/Снеки",w:100},{n:"Фрукты",w:1000},{n:"Бананы",w:600}] }
             ]
         },
         {
             name: "2️⃣ Прием пищи",
             groups: [
-                { id: "2г", title: "г) Сложные углеводы", items: [{ n: "Гречка", w: 40, c: 330 }, { n: "Макароны", w: 40, c: 350 }, { n: "Картофель", w: 140, c: 77 }] },
-                { id: "2д", title: "д) Белки", items: [{ n: "Телятина", w: 165, c: 150 }, { n: "Филе птицы", w: 175, c: 110 }, { n: "Рыба", w: 175, c: 90 }, { n: "2 яйца", w: 1, c: 155 }, { n: "Морепродукты", w: 220, c: 85 }] },
-                { id: "2е", title: "е) Овощи / Грибы", items: [{ n: "Овощи", w: 300, c: 25 }, { n: "Грибы", w: 300, c: 22 }] },
-                { id: "2ё", title: "ё) Жиры", items: [{ n: "Масло", w: 10, c: 890 }, { n: "Авокадо", w: 55, c: 160 }, { n: "Сало", w: 9, c: 800 }] }
+                { id: "2г", title: "г) Сложные углеводы (~145 ккал)", items: [{n:"Бобовые",w:40},{n:"Картофель",w:140},{n:"Кукуруза свежая",w:140},{n:"Рис (не шлиф.)",w:40},{n:"Крупа любая",w:40},{n:"Ц/з мука",w:40},{n:"Хлебцы",w:60},{n:"Ц/з хлеб",w:65},{n:"Макароны тв.",w:40},{n:"Лаваш",w:60}] },
+                { id: "2д", title: "д) Белки (~195 ккал)", items: [{n:"Телятина",w:165},{n:"Печень",w:165},{n:"Филе птицы",w:175},{n:"Рыба до 5%",w:175},{n:"Рыба от 5%",w:140},{n:"2 яйца",w:1},{n:"Морепродукты",w:220}] },
+                { id: "2е", title: "е) Овощи / Грибы (~60 ккал)", items: [{n:"Овощи/Зелень",w:300},{n:"Грибы",w:300}] },
+                { id: "2ё", title: "ё) Жиры / Соусы (~90 ккал)", items: [{n:"Масло",w:10},{n:"Майонез",w:13},{n:"Авокадо",w:55},{n:"Оливки",w:70},{n:"Горчица",w:24},{n:"Кетчуп",w:36},{n:"Сало",w:9}] }
             ]
         },
         {
             name: "3️⃣ Прием пищи",
             groups: [
-                { id: "3ж", title: "ж) Молочные", items: [{ n: "Творог", w: 190, c: 80 }, { n: "Йогурт", w: 330, c: 50 }] },
-                { id: "3з", title: "з) Фрукты", items: [{ n: "Фрукты", w: 320, c: 50 }, { n: "Банан", w: 190, c: 95 }] },
-                { id: "3и", title: "и) Орехи", items: [{ n: "Орехи", w: 15, c: 650 }] }
+                { id: "3ж", title: "ж) Молочные (~130 ккал)", items: [{n:"Творог 0.2%",w:190},{n:"Сыры",w:40},{n:"Сметана 15%",w:75},{n:"Кефир 1%",w:330},{n:"Йогурт 1%",w:330},{n:"Молоко 1%",w:335}] },
+                { id: "3з", title: "з) Фрукты и ягоды (~230 ккал)", items: [{n:"Фрукты/Ягоды",w:320},{n:"Банан/Виноград",w:190}] },
+                { id: "3и", title: "и) Орехи / Семена (~110 ккал)", items: [{n:"Орехи/Семена",w:15}] }
             ]
         },
         {
             name: "4️⃣ Прием пищи",
             groups: [
-                { id: "4и", title: "и) Белки", items: [{ n: "Филе птицы", w: 175, c: 110 }, { n: "Рыба", w: 175, c: 90 }, { n: "Телятина", w: 165, c: 150 }] },
-                { id: "4й", title: "й) Овощи", items: [{ n: "Зелень/Овощи", w: 300, c: 25 }] },
-                { id: "4к", title: "к) Жиры", items: [{ n: "Масло", w: 10, c: 890 }, { n: "Авокадо", w: 55, c: 160 }] }
+                { id: "4и", title: "и) Белки (~195 ккал)", items: [{n:"Телятина",w:165},{n:"Печень",w:165},{n:"Филе птицы",w:175},{n:"Рыба до 5%",w:175},{n:"Рыба от 5%",w:140},{n:"2 яйца",w:1},{n:"Морепродукты",w:220}] },
+                { id: "4й", title: "й) Овощи / Грибы (~60 ккал)", items: [{n:"Овощи/Зелень",w:300},{n:"Грибы",w:300}] },
+                { id: "4к", title: "к) Жиры / Соусы (~90 ккал)", items: [{n:"Масло",w:10},{n:"Майонез",w:13},{n:"Авокадо",w:55},{n:"Оливки",w:70},{n:"Горчица",w:24},{n:"Кетчуп",w:36},{n:"Сало",w:9}] }
             ]
         }
     ];
 
-    let eaten = JSON.parse(localStorage.getItem('eaten_v5')) || {};
+    let eaten = JSON.parse(localStorage.getItem('eaten_vFinal')) || {};
 
     function eat(groupId, itemName) {
         const key = groupId + "_" + itemName;
-        
-        // Считаем сумму порций в этой группе (кроме текущего продукта)
         let groupTotal = 0;
-        for (let k in eaten) {
-            if (k.startsWith(groupId + "_") && k !== key) {
-                groupTotal += eaten[k];
-            }
-        }
+        for (let k in eaten) { if (k.startsWith(groupId + "_") && k !== key) groupTotal += eaten[k]; }
 
-        const currentVal = eaten[key] || 0;
-        let newVal = 0;
+        const cur = eaten[key] || 0;
+        let next = 0;
 
-        // Логика переключения: 0 -> 0.5 -> 1.0 -> 0
-        if (currentVal === 0) {
-            if (groupTotal + 0.5 <= 1) newVal = 0.5;
-            else return; // Лимит превышен
-        } else if (currentVal === 0.5) {
-            if (groupTotal + 1 <= 1) newVal = 1;
-            else newVal = 0; // Если нельзя сделать 1, сбрасываем в 0
-        } else {
-            newVal = 0;
-        }
+        if (cur === 0) { if (groupTotal + 0.5 <= 1) next = 0.5; else return; }
+        else if (cur === 0.5) { if (groupTotal + 1 <= 1) next = 1; else next = 0; }
+        else { next = 0; }
 
-        eaten[key] = newVal;
-        if (newVal === 0) delete eaten[key];
-
-        localStorage.setItem('eaten_v5', JSON.stringify(eaten));
+        if (next === 0) delete eaten[key]; else eaten[key] = next;
+        localStorage.setItem('eaten_vFinal', JSON.stringify(eaten));
         renderFood();
     }
 
@@ -152,57 +129,42 @@
         dietData.forEach(meal => {
             html += `<div class="meal-card"><div class="meal-title">${meal.name}</div>`;
             meal.groups.forEach(g => {
-                html += `<div class="group-header"><span>${g.title}</span></div>`;
+                html += `<div class="group-header"><span>${g.title}</span></div><div style="display:flex;flex-direction:column;gap:5px;">`;
                 g.items.forEach(i => {
                     const val = eaten[g.id + "_" + i.n] || 0;
                     const cls = val === 0.5 ? 'status-half' : (val === 1 ? 'status-full' : '');
-                    const weightLabel = i.w === 1 ? '' : (val === 0.5 ? (i.w/2)+'г' : i.w+'г');
-                    html += `<div class="product-item ${cls}" onclick="eat('${g.id}', '${i.n}')">
-                        <span>${i.n}</span><span>${val > 0 ? (val === 0.5 ? '½ порц.' : '1 порц.') : weightLabel}</span>
-                    </div>`;
+                    const label = val > 0 ? (val === 0.5 ? '½ порц.' : '1 порц.') : (i.w === 1 ? '' : i.w + 'г');
+                    html += `<div class="product-item ${cls}" onclick="eat('${g.id}', '${i.n}')"><span>${i.n}</span><span>${label}</span></div>`;
                 });
+                html += `</div>`;
             });
             html += `</div>`;
         });
         app.innerHTML = html;
     }
 
-    // Сохранение полей ввода
-    const inputIds = ['steps', 'm_weight', 'm_chest', 'm_waist', 'm_hips', 'm_shoulder', 'm_leg'];
-    inputIds.forEach(id => {
-        const input = document.getElementById(id);
-        input.value = localStorage.getItem(id) || "";
-        input.oninput = () => localStorage.setItem(id, input.value);
+    const inputs = ['steps', 'm_weight', 'm_chest', 'm_waist', 'm_hips'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        el.value = localStorage.getItem(id) || "";
+        el.oninput = () => localStorage.setItem(id, el.value);
     });
 
     tg.MainButton.onClick(() => {
-        const date = new Date().toLocaleDateString('ru-RU');
-        let report = `📅 *ОТЧЕТ ЗА ${date}*\n\n`;
-        report += `👣 Шаги: ${document.getElementById('steps').value || 0}\n`;
-        report += `⚖️ Вес: ${document.getElementById('m_weight').value || '-'} кг\n`;
+        let report = `📊 *ОТЧЕТ ЗА ${new Date().toLocaleDateString('ru-RU')}*\n\n`;
+        report += `👣 Шаги: ${document.getElementById('steps').value || 0}\n⚖️ Вес: ${document.getElementById('m_weight').value || '-'} кг\n`;
         
-        let totalCal = 0;
         let foodStr = "\n🍎 *ЕДА:*";
-        let hasFood = false;
-
         dietData.forEach(m => {
             m.groups.forEach(g => {
                 g.items.forEach(i => {
                     const v = eaten[g.id + "_" + i.n] || 0;
-                    if(v > 0) {
-                        hasFood = true;
-                        const c = i.w === 1 ? Math.round(i.c * v) : Math.round((i.c * i.w * v) / 100);
-                        totalCal += c;
-                        foodStr += `\n• ${i.n}: ${v} порц. (~${c} ккал)`;
-                    }
+                    if(v > 0) foodStr += `\n• ${i.n} (${v} порц.)`;
                 });
             });
         });
-
-        report += (hasFood ? foodStr : "\n🍎 Еда не отмечена");
-        report += `\n\n🔥 *ИТОГО:* ${totalCal} ккал`;
-
-        tg.sendData(report);
+        
+        tg.sendData(report + foodStr);
         localStorage.clear();
     });
 
