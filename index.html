@@ -181,51 +181,72 @@
     }
 
     tg.MainButton.onClick(() => {
+    try {
+        console.log("Кнопка нажата, начинаем сбор данных...");
+        
         const date = new Date().toLocaleDateString('ru-RU');
-        const steps = localStorage.getItem('steps') || 0;
-        let report = `📅 *ОТЧЕТ ЗА ${date}*\n\n👣 Шаги: ${steps}\n⚖️ Вес: ${localStorage.getItem('m_weight') || '-'} кг\n`;
+        const steps = localStorage.getItem('steps') || "0";
+        const weight = localStorage.getItem('m_weight') || "-";
+        
+        let report = `📅 *ОТЧЕТ ЗА ${date}*\n\n`;
+        report += `👣 Шаги: ${steps}\n`;
+        report += `⚖️ Вес: ${weight} кг\n`;
         
         // Сбор замеров
-        const m = ['m_chest', 'm_waist', 'm_hips', 'm_shoulder', 'm_leg'];
-        const labels = ['Грудь', 'Талия', 'Бедра', 'Плечо', 'Нога'];
-        let mStr = "";
-        m.forEach((id, i) => {
-            let val = localStorage.getItem(id);
-            if(val) mStr += `\n📏 ${labels[i]}: ${val} см`;
+        const measurements = [
+            {id: 'm_chest', l: 'Грудь'},
+            {id: 'm_waist', l: 'Талия'},
+            {id: 'm_hips', l: 'Бедра'},
+            {id: 'm_shoulder', l: 'Плечо'},
+            {id: 'm_leg', l: 'Нога'}
+        ];
+        
+        measurements.forEach(m => {
+            const val = localStorage.getItem(m.id);
+            if (val) report += `📏 ${m.l}: ${val} см\n`;
         });
-        if(mStr) report += mStr + "\n";
 
         let totalCal = 0;
         let foodPart = "\n🍎 *ПИТАНИЕ:*";
+        let hasFood = false;
 
-        dietData.forEach(meal => {
-            meal.groups.forEach(group => {
-                group.items.forEach(item => {
-                    const val = eaten[`${group.id}_${item.n}`] || 0;
-                    if (val > 0) {
-                        const cals = item.w === 1 ? Math.round(item.c * val) : Math.round((item.c * item.w * val) / 100);
-                        totalCal += cals;
-                        foodPart += `\n• ${item.n} (${val} порц) → ${cals} ккал`;
-                    }
+        // Важно: проверяем наличие dietData и eaten
+        if (typeof dietData !== 'undefined' && eaten) {
+            dietData.forEach(meal => {
+                meal.groups.forEach(group => {
+                    group.items.forEach(item => {
+                        const val = eaten[`${group.id}_${item.n}`] || 0;
+                        if (val > 0) {
+                            hasFood = true;
+                            const cals = item.w === 1 ? Math.round(item.c * val) : Math.round((item.c * item.w * val) / 100);
+                            totalCal += cals;
+                            foodPart += `\n• ${item.n} (${val === 0.5 ? '½' : '1'} порц) → ${cals} ккал`;
+                        }
+                    });
                 });
             });
-        });
+        }
 
-        report += foodPart + `\n\n🔥 *ИТОГО:* ${totalCal} ккал`;
+        if (hasFood) {
+            report += foodPart + `\n\n🔥 *ИТОГО:* ${totalCal} ккал`;
+        } else {
+            report += "\n🍎 Данные о еде не внесены";
+        }
+
+        // САМЫЙ ВАЖНЫЙ МОМЕНТ:
+        // Перед отправкой проверяем, что report - это строка
+        console.log("Отправка отчета...");
+        tg.sendData(String(report)); 
         
-        tg.sendData(report);
-        localStorage.clear(); // Очистка после отправки
-    });
+        // Очистка памяти только ПОСЛЕ успешной команды отправки
+        localStorage.clear();
 
-    // Первичная загрузка
-    document.addEventListener('DOMContentLoaded', () => {
-        const ids = ['steps', 'm_weight', 'm_chest', 'm_waist', 'm_hips', 'm_shoulder', 'm_leg'];
-        ids.forEach(id => {
-            const val = localStorage.getItem(id);
-            if(val) document.getElementById(id).value = val;
-        });
-        renderFood();
-    });
+    } catch (error) {
+        // Если что-то сломалось, вы увидите окно с ошибкой на телефоне
+        alert("Произошла ошибка в коде: " + error.message);
+    }
+});
 </script>
 </body>
 </html>
+
