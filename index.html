@@ -3,29 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Мой Дневник</title>
+    <title>Дневник Питания</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
             --bg-color: #1c1c1d; --card-bg: #2c2c2e; --text-color: #ffffff;
             --hint-color: #8e8e93; --accent-color: #0a84ff; --border-color: #3a3a3c;
         }
-        body { font-family: -apple-system, system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        body { font-family: -apple-system, system-ui, sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; user-select: none; }
         .nav-tabs { display: flex; background: var(--card-bg); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border-color); }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: none; color: var(--hint-color); font-size: 13px; font-weight: bold; cursor: pointer; }
-        .tab-btn.active { color: var(--accent-color); border-bottom: 2px solid var(--accent-color); }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: none; color: var(--hint-color); font-size: 13px; font-weight: bold; }
+        .tab-btn.active { color: var(--accent-color); border-bottom: 3px solid var(--accent-color); }
         .container { padding: 10px; padding-bottom: 100px; }
         .section { display: none; }
         .section.active { display: block; }
         .meal-card { background: var(--card-bg); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .meal-title { font-size: 1.1rem; font-weight: bold; color: var(--accent-color); margin-bottom: 10px; }
-        .group-header { font-size: 0.8rem; color: var(--hint-color); margin: 10px 0 5px; }
+        .meal-title { font-size: 1.1rem; font-weight: bold; color: var(--accent-color); margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+        .group-header { font-size: 0.8rem; color: var(--hint-color); margin: 15px 0 8px; font-weight: bold; text-transform: uppercase; }
         .product-item {
-            display: flex; justify-content: space-between; padding: 12px; border: 1px solid var(--border-color);
-            border-radius: 10px; background: var(--bg-color); margin-bottom: 5px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center; padding: 12px; 
+            border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-color); 
+            margin-bottom: 6px; transition: 0.2s;
         }
-        .status-half { background: #ffd60a !important; color: #000; font-weight: bold; }
-        .status-full { background: #32d74b !important; color: #000; font-weight: bold; }
+        .status-half { background: #ffd60a !important; color: #000; font-weight: bold; border-color: #ffd60a; }
+        .status-full { background: #32d74b !important; color: #000; font-weight: bold; border-color: #32d74b; }
         input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-color); color: #fff; margin-top: 5px; box-sizing: border-box; }
         label { display: block; margin-top: 10px; color: var(--hint-color); font-size: 0.8rem; }
     </style>
@@ -33,22 +34,31 @@
 <body>
 
 <div class="nav-tabs">
-    <button class="tab-btn active" onclick="showSection('nutrition')">Питание</button>
-    <button class="tab-btn" onclick="showSection('activity')">Активность</button>
-    <button class="tab-btn" onclick="showSection('measurements')">Замеры</button>
+    <button class="tab-btn active" id="btn-nutrition" onclick="showSection('nutrition')">Питание</button>
+    <button class="tab-btn" id="btn-activity" onclick="showSection('activity')">Активность</button>
+    <button class="tab-btn" id="btn-measurements" onclick="showSection('measurements')">Замеры</button>
 </div>
 
 <div class="container">
     <div id="nutrition" class="section active"><div id="food-app"></div></div>
+    
     <div id="activity" class="section">
-        <div class="meal-card"><div class="meal-title">Шаги</div><input type="number" id="steps" placeholder="0" oninput="localStorage.setItem('steps', this.value)"></div>
+        <div class="meal-card">
+            <div class="meal-title">Активность</div>
+            <label>Шаги за день</label>
+            <input type="number" id="steps" placeholder="Введите кол-во...">
+        </div>
     </div>
+
     <div id="measurements" class="section">
         <div class="meal-card">
-            <div class="meal-title">Замеры</div>
-            <label>Вес</label><input type="number" id="m_weight" oninput="localStorage.setItem('m_weight', this.value)">
-            <label>Талия</label><input type="number" id="m_waist" oninput="saveM(this)">
-            <label>Бедра</label><input type="number" id="m_hips" oninput="saveM(this)">
+            <div class="meal-title">Замеры тела</div>
+            <label>Вес (кг)</label><input type="number" id="m_weight" step="0.1">
+            <label>Грудь (см)</label><input type="number" id="m_chest">
+            <label>Талия (см)</label><input type="number" id="m_waist">
+            <label>Бедра (см)</label><input type="number" id="m_hips">
+            <label>Плечо (см)</label><input type="number" id="m_shoulder">
+            <label>Нога (см)</label><input type="number" id="m_leg">
         </div>
     </div>
 </div>
@@ -56,36 +66,64 @@
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    tg.MainButton.text = "ОТПРАВИТЬ ОТЧЕТ";
+    tg.MainButton.text = "ОТПРАВИТЬ ОТЧЕТ В БОТ";
     tg.MainButton.show();
 
     function showSection(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        event.currentTarget.classList.add('active');
+        document.getElementById('btn-' + id).classList.add('active');
     }
 
-    function saveM(el) { localStorage.setItem(el.id, el.value); }
-
     const dietData = [
-        { name: "1️⃣ Завтрак", groups: [{ id: "1а", title: "Углеводы", items: [{ n: "Гречка", w: 40, c: 330 }, { n: "Овсянка", w: 40, c: 350 }] }] },
-        { name: "2️⃣ Обед", groups: [{ id: "2д", title: "Белки", items: [{ n: "Курица", w: 175, c: 110 }, { n: "Рыба", w: 175, c: 90 }] }] }
-        // Добавьте остальные свои продукты сюда в таком же формате
+        {
+            name: "1️⃣ Прием пищи",
+            groups: [
+                { id: "1а", title: "📌 а) Сложные углеводы", items: [{ n: "Бобовые", w: 40, c: 130 }, { n: "Картофель", w: 140, c: 77 }, { n: "Кукуруза", w: 140, c: 86 }, { n: "Рис", w: 40, c: 340 }, { n: "Крупа любая", w: 40, c: 330 }, { n: "Хлебцы", w: 60, c: 310 }, { n: "Макароны", w: 40, c: 350 }] },
+                { id: "1б", title: "📌 б) Молочные продукты", items: [{ n: "Творог 0.2%", w: 160, c: 80 }, { n: "Сыры", w: 30, c: 360 }, { n: "Кефир 1%", w: 270, c: 40 }] },
+                { id: "1в", title: "📌 в) Что угодно / Фрукты", items: [{ n: "Сладкое", w: 100, c: 450 }, { n: "Фрукты", w: 1000, c: 50 }] }
+            ]
+        },
+        {
+            name: "2️⃣ Прием пищи",
+            groups: [
+                { id: "2г", title: "📌 г) Сложные углеводы", items: [{ n: "Гречка", w: 40, c: 330 }, { n: "Картофель", w: 140, c: 77 }, { n: "Макароны", w: 40, c: 350 }] },
+                { id: "2д", title: "📌 д) Белки", items: [{ n: "Телятина", w: 165, c: 150 }, { n: "Филе птицы", w: 175, c: 110 }, { n: "Рыба", w: 175, c: 90 }, { n: "2 яйца", w: 1, c: 155 }] },
+                { id: "2е", title: "📌 е) Овощи / Грибы", items: [{ n: "Овощи", w: 300, c: 25 }, { n: "Грибы", w: 300, c: 22 }] },
+                { id: "2ё", title: "📌 ё) Жиры", items: [{ n: "Масло", w: 10, c: 890 }, { n: "Авокадо", w: 55, c: 160 }, { n: "Сало", w: 9, c: 800 }] }
+            ]
+        },
+        {
+            name: "3️⃣ Прием пищи",
+            groups: [
+                { id: "3ж", title: "📌 ж) Молочные", items: [{ n: "Творог", w: 190, c: 80 }, { n: "Кефир", w: 330, c: 40 }] },
+                { id: "3з", title: "📌 з) Фрукты / Ягоды", items: [{ n: "Фрукты", w: 320, c: 50 }, { n: "Банан", w: 190, c: 95 }] },
+                { id: "3и", title: "📌 и) Орехи", items: [{ n: "Орехи", w: 15, c: 650 }] }
+            ]
+        },
+        {
+            name: "4️⃣ Прием пищи",
+            groups: [
+                { id: "4и", title: "📌 и) Белки", items: [{ n: "Филе птицы", w: 175, c: 110 }, { n: "Рыба", w: 175, c: 90 }, { n: "Морепродукты", w: 220, c: 85 }] },
+                { id: "4й", title: "📌 й) Овощи", items: [{ n: "Зелень/Овощи", w: 300, c: 25 }] },
+                { id: "4к", title: "📌 к) Жиры", items: [{ n: "Масло", w: 10, c: 890 }, { n: "Авокадо", w: 55, c: 160 }] }
+            ]
+        }
     ];
 
-    let eaten = JSON.parse(localStorage.getItem('eaten_v3')) || {};
+    let eaten = JSON.parse(localStorage.getItem('eaten_v4')) || {};
 
     function eat(groupId, itemName) {
         const key = groupId + "_" + itemName;
         const cur = eaten[key] || 0;
         eaten[key] = cur === 0 ? 0.5 : (cur === 0.5 ? 1 : 0);
-        localStorage.setItem('eaten_v3', JSON.stringify(eaten));
+        localStorage.setItem('eaten_v4', JSON.stringify(eaten));
         renderFood();
     }
 
     function renderFood() {
-        const container = document.getElementById('food-app');
+        const app = document.getElementById('food-app');
         let html = '';
         dietData.forEach(meal => {
             html += `<div class="meal-card"><div class="meal-title">${meal.name}</div>`;
@@ -94,46 +132,57 @@
                 g.items.forEach(i => {
                     const val = eaten[g.id + "_" + i.n] || 0;
                     const cls = val === 0.5 ? 'status-half' : (val === 1 ? 'status-full' : '');
+                    const weight = (i.w === 1) ? '' : (val === 0.5 ? (i.w/2)+'г' : i.w+'г');
                     html += `<div class="product-item ${cls}" onclick="eat('${g.id}', '${i.n}')">
-                        <span>${i.n}</span><span>${val > 0 ? val + ' порц.' : i.w + 'г'}</span>
+                        <span>${i.n}</span><span>${val > 0 ? (val === 0.5 ? '½ порц.' : '1 порц.') : weight}</span>
                     </div>`;
                 });
             });
             html += `</div>`;
         });
-        container.innerHTML = html;
+        app.innerHTML = html;
     }
 
-    tg.MainButton.onClick(() => {
-        try {
-            let report = "📊 ОТЧЕТ ЗА СЕГОДНЯ\n\n";
-            report += "👣 Шаги: " + (localStorage.getItem('steps') || 0) + "\n";
-            report += "⚖️ Вес: " + (localStorage.getItem('m_weight') || "-") + " кг\n\n🍎 ЕДА:";
-            
-            dietData.forEach(m => {
-                m.groups.forEach(g => {
-                    g.items.forEach(i => {
-                        const v = eaten[g.id + "_" + i.n] || 0;
-                        if(v > 0) report += `\n- ${i.n}: ${v} порц.`;
-                    });
-                });
-            });
-
-            tg.sendData(report); // Самая важная строка
-            localStorage.clear();
-        } catch (e) {
-            alert("Ошибка: " + e.message);
-        }
+    // Сохранение текстовых полей
+    const inputs = ['steps', 'm_weight', 'm_chest', 'm_waist', 'm_hips', 'm_shoulder', 'm_leg'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        el.value = localStorage.getItem(id) || "";
+        el.oninput = () => localStorage.setItem(id, el.value);
     });
 
-    // Загрузка сохраненных значений в инпуты
-    window.onload = () => {
-        ['steps', 'm_weight', 'm_waist', 'm_hips'].forEach(id => {
-            const v = localStorage.getItem(id);
-            if(v) document.getElementById(id).value = v;
+    tg.MainButton.onClick(() => {
+        const date = new Date().toLocaleDateString('ru-RU');
+        let report = `📅 *ОТЧЕТ ЗА ${date}*\n\n`;
+        report += `👣 Шаги: ${document.getElementById('steps').value || 0}\n`;
+        report += `⚖️ Вес: ${document.getElementById('m_weight').value || '-'} кг\n`;
+        
+        let totalCal = 0;
+        let foodStr = "\n🍎 *ЕДА:*";
+        let hasFood = false;
+
+        dietData.forEach(m => {
+            m.groups.forEach(g => {
+                g.items.forEach(i => {
+                    const v = eaten[g.id + "_" + i.n] || 0;
+                    if(v > 0) {
+                        hasFood = true;
+                        const c = i.w === 1 ? Math.round(i.c * v) : Math.round((i.c * i.w * v) / 100);
+                        totalCal += c;
+                        foodStr += `\n• ${i.n}: ${v} порц. (~${c} ккал)`;
+                    }
+                });
+            });
         });
-        renderFood();
-    };
+
+        report += (hasFood ? foodStr : "\n🍎 Еда не отмечена");
+        report += `\n\n🔥 *ИТОГО:* ${totalCal} ккал`;
+
+        tg.sendData(report);
+        localStorage.clear();
+    });
+
+    renderFood();
 </script>
 </body>
 </html>
