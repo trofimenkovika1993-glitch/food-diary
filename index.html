@@ -143,7 +143,7 @@
         app.innerHTML = html;
     }
 
-  const inputs = ['steps', 'm_weight', 'm_chest', 'm_waist', 'm_hips'];
+const inputs = ['steps', 'm_weight', 'm_chest', 'm_waist', 'm_hips'];
     inputs.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -152,8 +152,10 @@
         }
     });
 
-    // 1. СЮДА МЫ ДОВАВИЛИ ВСТАВКУ ОКОШКА НА СТРАНИЦУ
-    // Этот код сам создаст текстовое поле прямо перед кнопкой отправки!
+    // Возвращаем показ продуктов на экран!
+    renderFood();
+
+    // Добавление окошка для срывов перед кнопкой
     if (!document.getElementById('extra-input')) {
         const extraDiv = document.createElement('div');
         extraDiv.style = "margin: 20px 10px; text-align: left;";
@@ -168,14 +170,13 @@
                 style="width:100%; padding:12px; border:1px solid #ccc; border-radius:10px; font-size:14px; resize:vertical; box-sizing:border-box; background-color: #fff; color: #000;"
             ></textarea>
         `;
-        // Вставляем окошко прямо перед кнопкой, если она есть, или просто в конец
         const appContainer = document.getElementById('food-app');
         if (appContainer) {
             appContainer.after(extraDiv);
         }
     }
 
-    // 2. А ТЕПЕРЬ ОБНОВЛЕННАЯ ОТПРАВКА С УЧЕТОМ ЭТОГО ОКОШКА
+    // Обновленная отправка с учетом окошка
     tg.MainButton.onClick(() => {
         let report = `📊 *ОТЧЕТ ЗА ${new Date().toLocaleDateString('ru-RU')}*\n\n`;
         report += `👣 Шаги: ${document.getElementById('steps').value || 0}\n⚖️ Вес: ${document.getElementById('m_weight').value || '-'} кг\n`;
@@ -190,7 +191,6 @@
             });
         });
         
-        // Считываем то, что ты написала руками
         const extraText = document.getElementById('extra-input')?.value.trim() || '';
         if (extraText) {
             foodStr += `\n\n⚠️ *ДОПОЛНИТЕЛЬНО (срывы/перекусы):*\n${extraText}`;
@@ -199,7 +199,6 @@
         tg.sendData(report + foodStr);
         localStorage.clear();
         
-        // Очищаем и само текстовое поле после отправки
         const extraField = document.getElementById('extra-input');
         if (extraField) extraField.value = '';
     });
