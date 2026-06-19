@@ -152,13 +152,13 @@ const inputs = ['steps', 'm_weight', 'm_chest', 'm_waist', 'm_hips'];
         }
     });
 
-    // Возвращаем показ продуктов на экран!
+    // 1. Сначала железно выводим продукты
     renderFood();
 
-    // Добавление окошка для срывов перед кнопкой
+    // 2. А окошко для срывов создаем отдельно в самом низу страницы, чтобы оно ничего не ломало
     if (!document.getElementById('extra-input')) {
         const extraDiv = document.createElement('div');
-        extraDiv.style = "margin: 20px 10px; text-align: left;";
+        extraDiv.style = "margin: 20px 10px; text-align: left; clear: both;";
         extraDiv.innerHTML = `
             <label for="extra-input" style="display:block; font-weight:600; margin-bottom:8px; color: #fff;">
                 🗒 Дополнительно (продукты не из списка или срывы)
@@ -166,17 +166,15 @@ const inputs = ['steps', 'm_weight', 'm_chest', 'm_waist', 'm_hips'];
             <textarea
                 id="extra-input"
                 rows="3"
-                placeholder="Например: сорвалась на кусочек пиццы, съела 2 печенья..."
+                placeholder="Например: сорвалась на кусочек piцы, съела 2 печенья..."
                 style="width:100%; padding:12px; border:1px solid #ccc; border-radius:10px; font-size:14px; resize:vertical; box-sizing:border-box; background-color: #fff; color: #000;"
             ></textarea>
         `;
-        const appContainer = document.getElementById('food-app');
-        if (appContainer) {
-            appContainer.after(extraDiv);
-        }
+        // Безопасно добавляем в самый конец боди страницы
+        document.body.appendChild(extraDiv);
     }
 
-    // Обновленная отправка с учетом окошка
+    // 3. Отправка отчета в бот
     tg.MainButton.onClick(() => {
         let report = `📊 *ОТЧЕТ ЗА ${new Date().toLocaleDateString('ru-RU')}*\n\n`;
         report += `👣 Шаги: ${document.getElementById('steps').value || 0}\n⚖️ Вес: ${document.getElementById('m_weight').value || '-'} кг\n`;
